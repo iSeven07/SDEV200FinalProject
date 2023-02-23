@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Massage Class
+ */
+
 public class Massage extends Service {
     /** Variables */
     private String style;

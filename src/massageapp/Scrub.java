@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Scrub Class
+ */
+
 public class Scrub extends Service {
     /** Variables */
     private String productType;

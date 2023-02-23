@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Therapist Class
+ */
+
 public class Therapist extends User {
     /** Variables */
     private String licenseNumber;

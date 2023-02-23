@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Abstract User Class
+ */
+
 import java.util.Date;
 
 public abstract class User {

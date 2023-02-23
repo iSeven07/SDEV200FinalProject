@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Client Class
+ */
+
 public class Client extends User {
     /** Variables */
     private String phoneNumber;

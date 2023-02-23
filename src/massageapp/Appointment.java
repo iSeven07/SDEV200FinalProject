@@ -1,5 +1,12 @@
 package massageapp;
 
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: Appointment Class
+ */
+
 import java.util.ArrayList;
 import java.util.Date;
 
