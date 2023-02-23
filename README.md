@@ -4,7 +4,7 @@ This applications was created by **Aaron Corns** for their *SDEV-200: Java Progr
 
 ## Folder Structure
 
-You will find all source files within __/src/massageapp__ folder.
+You will find all source files within _/src/massageapp_ folder.
 
 ## Dependency Management
 
