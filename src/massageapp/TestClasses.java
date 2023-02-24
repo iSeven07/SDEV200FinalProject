@@ -18,6 +18,8 @@ package massageapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+
 /** Test Application */
 public class TestClasses {
     public static void main(String[] args) throws Exception {
@@ -38,12 +40,31 @@ public class TestClasses {
         /** Appointment Creation */
         Appointment appointment1 = new Appointment(client1, therapist1, new ArrayList<Service>(Arrays.asList(massage1, scrub1)), new java.util.Date());
 
-        // Print Class Objects
+        /** Print Objects */
         print(client1);
         print(therapist1);
         print(massage1);
         print(scrub1);
         print(appointment1);
+
+        /** Test MongoDB Connection */
+        // NOTE: Connection should be allowed from anywhere in the world; however, a connection denied
+        //       message may still happen. If so, a fix will be found or alternatively the instructor's IP
+        //       address can be added to the allowed connections list. Upon successful connection, the list
+        //       will populate test collection's held within the MongoDB Atlas cluster.
+
+        try{
+            System.out.println("Testing MongoDB Atlas connection... Please wait.");
+            MongoConnector dbConnection = new MongoConnector("mongodb+srv://admin:test123@cluster0.lmb2nuu.mongodb.net/?retryWrites=true&w=majority");
+            System.out.println("\nListing Databases:");
+            dbConnection.listDatabases();
+            System.out.println("\nListing Collections:");
+            dbConnection.listCollections();
+            System.out.println();
+        }catch(InstantiationException error){
+            System.out.println(error.getMessage());
+        }
+
     }
 
     /** Print Objects */
