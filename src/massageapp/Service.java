@@ -23,12 +23,6 @@ public abstract class Service {
         setServiceID();
     }
 
-    /** Set Unique Service ID */
-    private void setServiceID() {
-        serviceCount++;
-        this.serviceID = serviceCount;
-    }
-
     /** Accessors & Mutators */
     public int getServiceID() {
         return this.serviceID;
@@ -38,6 +32,12 @@ public abstract class Service {
     }
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    /** Set Unique Service ID */
+    private void setServiceID() {
+        serviceCount++;
+        this.serviceID = serviceCount;
     }
     
 }

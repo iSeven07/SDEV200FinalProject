@@ -46,7 +46,7 @@ public abstract class User {
     }
 
 
-    /** Sets and ups the userID to stay unique */
+    /** Sets unique userID */
     private void setUserID() {
         numUsers++;
         this.userID = numUsers;

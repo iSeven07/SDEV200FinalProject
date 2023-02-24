@@ -69,7 +69,7 @@ public class Appointment {
         this.dateTime = dateTime;
     }
 
-    /** Set AppointmentID */
+    /** Set unique AppointmentID */
     private void setAppointmentID() {
         appointmentCount++;
         this.appointmentID = appointmentCount;
