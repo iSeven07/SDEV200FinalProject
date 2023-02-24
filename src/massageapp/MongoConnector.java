@@ -27,6 +27,7 @@ public class MongoConnector {
        return instance;
    }
  
+   /** Lists Databases in the MongoDB Cluster */
    public void listDatabases(){
        try {
            List<Document> databases = instance.listDatabases().into(new ArrayList<>());
@@ -36,9 +37,9 @@ public class MongoConnector {
        }
    }
    
+   /** Lists Collections within our specified Database: pseudo_massage */
    public void listCollections(){
     try {
-
         MongoDatabase database = instance.getDatabase("pseudo_massage");
        // MongoCollection<Document> collection = database.getCollection("clients");
 
@@ -49,5 +50,19 @@ public class MongoConnector {
     } catch(Exception err) {
         System.out.println(err.getMessage());
     }
+   }
+   /** Lists Documents within a given collection */
+   public void listDocuments() {
+        try {
+            //MongoDatabase database = instance.getDatabase("pseudo_massage");
+            //MongoCollection<Document> collections = database.getCollection("clients");
+
+            // Code to iterate through MongoCollection<Document>
+            // More research is needed as currently dealing with MongoCollection<Document> not being iterable
+            System.out.println("listDocuments() is still a work in progress...");
+
+        } catch (Exception err) {
+            System.out.println(err.getMessage());
+        }
    }
 }
