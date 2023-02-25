@@ -12,6 +12,6 @@ Before running this program, please ensure that you have JavaFX installed and kn
 
 ## Running via Command Prompt
 
-You can run this application right from Command Prompt. Put your current directory as the /src folder and then run the following commands:
+You can run this application right from Command Prompt. Put your current directory as the /src folder and then run the following commands:<br />
 **javac -classpath ..\lib\*;. massageapp/TestClasses**<br />
 **java -classpath ..\lib\*;. massageapp/TestClasses**
