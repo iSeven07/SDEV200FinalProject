@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch MongoDB",
+            "request": "launch",
+            "mainClass": "massageapp.MongoDB",
+            "projectName": "FinalProject_b98901c6"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"

@@ -5,7 +5,7 @@ package massageapp;
  * Author: Aaron Corns
  * Date: 2-22-2023
  * Course: SDEV-200
- * Last Update: 2-23-2023
+ * Last Update: 2-25-2023
  * Description: This application is the start of a program that will allow a user
  *              to create appointments at a Massage Therapy Business. Currently
  *              the application will create our various class objects and then
@@ -14,13 +14,22 @@ package massageapp;
  *              appointment object. They will then be sent to a print() function to
  *              print their details to the console for verification that the classes
  *              are working.
+ * 
+ * Special Note: Classes will be changed and enhanced as more Mongo DB functionality
+ *               is added to the program. If you are receiving errors when attempting
+ *               to compile. Please ensure that your IDE has the lib\ folder included
+ *               in your classpath. You can also compile this program from the src\ 
+ *               folder using Command Prompt (NOT TERMINAL):
+ * 
+ *               javac -classpath ..\lib\*;. massageapp/*.java
+ *               java -classpath ..\lib\*;. massageapp/TestClasses
  */
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 
-/** Test Application */
+/** Test Application that Tests Classes */
 public class TestClasses {
     public static void main(String[] args) throws Exception {
 
@@ -52,18 +61,45 @@ public class TestClasses {
         //       message may still happen. If so, a fix will be found or alternatively the instructor's IP
         //       address can be added to the allowed connections list. Upon successful connection, the list
         //       will populate test collection's held within the MongoDB Atlas cluster.
-
+        
         try{
             System.out.println("Testing MongoDB Atlas connection... Please wait.");
-            MongoConnector dbConnection = new MongoConnector("mongodb+srv://admin:test123@cluster0.lmb2nuu.mongodb.net/?retryWrites=true&w=majority");
+            MongoDB dbConnection = new MongoDB();
+
             System.out.println("\nListing Databases:");
             dbConnection.listDatabases();
-            System.out.println("\nListing Collections:");
+
+            System.out.println("\nListing Collections in 'pseudo-massage':");
             dbConnection.listCollections();
+
+            // Insert Created Objects into DB
+            System.out.println("\nInserting Objects...");
+            dbConnection.insertObject(client1);
+            dbConnection.insertObject(therapist1);
+            dbConnection.insertObject(massage1);
+            dbConnection.insertObject(scrub1);
+            dbConnection.insertObject(appointment1);
+
+            //Print Collections
+            dbConnection.listDocuments("clients");
+            dbConnection.listDocuments("therapists");
+            dbConnection.listDocuments("massages");
+            dbConnection.listDocuments("scrubs");
+            dbConnection.listDocuments("appointments");
+
+            // Delete Objects from DB
+            dbConnection.deleteObject(client1);
+            dbConnection.deleteObject(therapist1);
+            dbConnection.deleteObject(massage1);
+            dbConnection.deleteObject(scrub1);
+            dbConnection.deleteObject(appointment1);
+
             System.out.println();
-        }catch(InstantiationException error){
+        }catch(Exception error){
+            System.out.println("Something went wrong...\nError Information:\n");
             System.out.println(error.getMessage());
         }
+
 
     }
 

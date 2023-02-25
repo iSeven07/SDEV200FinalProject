@@ -29,17 +29,25 @@ public abstract class User {
     }
 
     /** Accessors and Mutators */
+    public String getFirstName() {
+        return this.firstName;
+    }
+    public String getLastName() {
+        return this.lastName;
+    }
     public int getUserID() {
         return this.userID;
     }
     public String getName() {
         return this.firstName + " " + this.lastName;
     }
-    public void setFirstName(String firstName) {
+    public User setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
-    public void setLastName(String lastName) {
+    public User setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
     public Date getCreationDate() {
         return this.creationDate;
