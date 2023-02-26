@@ -1,6 +1,21 @@
 package massageapp;
 
-import java.net.UnknownHostException;
+/*
+ * Program: FinalProject - MassageApp
+ * Author: Aaron Corns
+ * Course: SDEV-200
+ * Class: MongoDB Connection Class
+ * Description: This class allows the program to communicate with our MongoDB Atlas Cluster. Drivers files
+ *              are required and are located in the lib\ folder. If you see any syntax or runtime errors related
+ *              to MongoDB, it is most likely your classpath is not properly configured. For simplicity, it is possible
+ *              to compile and run the program from Command Line (NOT Terminal) using the following commands. You will 
+ *              need to make sure you navigate, in Command Prompt, to the src\ folder first.
+ * 
+ *               javac -classpath ..\lib\*;. massageapp/*.java
+ *               java -classpath ..\lib\*;. massageapp/TestClasses
+ */
+
+//import java.net.UnknownHostException;
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.FindIterable;
@@ -9,8 +24,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.FindOneAndReplaceOptions;
-import com.mongodb.client.model.ReturnDocument;
+//import com.mongodb.client.model.FindOneAndReplaceOptions;
+//import com.mongodb.client.model.ReturnDocument;
 
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
@@ -20,8 +35,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.mongodb.client.model.Filters.eq;
-import static java.util.Collections.singletonList;
+//import static com.mongodb.client.model.Filters.eq;
+//import static java.util.Collections.singletonList;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
@@ -161,51 +176,3 @@ public class MongoDB {
     }
 
 }
-
-    // public static void main(String[] args) throws UnknownHostException {
-        
-    //     ConnectionString connectionString = new ConnectionString("mongodb+srv://admin:test123@cluster0.bw3dt7h.mongodb.net/?retryWrites=true&w=majority");
-    //     CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
-    //     CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
-    //     MongoClientSettings clientSettings = MongoClientSettings.builder()
-    //                                                             .applyConnectionString(connectionString)
-    //                                                             .codecRegistry(codecRegistry)
-    //                                                             .build();
-    //     try (MongoClient mongoClient = MongoClients.create(clientSettings)) {
-    //         MongoDatabase db = mongoClient.getDatabase("pseudo_massage");
-    //         MongoCollection<Client> clients = db.getCollection("clients", Client.class);
-
-    //         // create a new grade.
-    //         Grade newGrade = new Grade().setStudentId(10003d)
-    //                                     .setClassId(10d)
-    //                                     .setScores(singletonList(new Score().setType("homework").setScore(50d)));
-    //         grades.insertOne(newGrade);
-    //         System.out.println("Grade inserted.");
-
-    //         Client newClient = ((Client)(new Client().setFirstName("Jane")
-    //                             .setLastName("Smith")))
-    //                             .setPhoneNumber("123-456-789");
-    //         newClient.setFirstName("Jane");
-    //         newClient.setLastName("Smith");
-    //         newClient.setPhoneNumber("123-456-7890");
-    //         clients.insertOne(newClient);
-    //         System.out.println("Client inserted.");
-
-    //         find this grade.
-    //         Client client = clients.find(eq("firstName", "John")).first();
-    //         System.out.println("Client found:\t" + client);
-
-    //         // update this grade: adding an exam grade
-    //         List<Score> newScores = new ArrayList<>(grade.getScores());
-    //         newScores.add(new Score().setType("exam").setScore(42d));
-    //         grade.setScores(newScores);
-    //         Document filterByGradeId = new Document("_id", grade.getId());
-    //         FindOneAndReplaceOptions returnDocAfterReplace = new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER);
-    //         Grade updatedGrade = grades.findOneAndReplace(filterByGradeId, grade, returnDocAfterReplace);
-    //         System.out.println("Grade replaced:\t" + updatedGrade);
-
-    //         // delete this grade
-    //         System.out.println("Grade deleted:\t" + grades.deleteOne(filterByGradeId));
-    //     }
-
-    // }

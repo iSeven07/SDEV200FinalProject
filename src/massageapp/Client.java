@@ -23,8 +23,7 @@ public class Client extends User {
     public String getPhoneNumber() {
         return this.phoneNumber;
     }
-    public Client setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        return this;
     }
 }

@@ -41,13 +41,11 @@ public abstract class User {
     public String getName() {
         return this.firstName + " " + this.lastName;
     }
-    public User setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
-        return this;
     }
-    public User setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
-        return this;
     }
     public Date getCreationDate() {
         return this.creationDate;

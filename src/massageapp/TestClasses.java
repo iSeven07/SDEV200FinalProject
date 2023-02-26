@@ -64,7 +64,7 @@ public class TestClasses {
         
         try{
             System.out.println("Testing MongoDB Atlas connection... Please wait.");
-            MongoDB dbConnection = new MongoDB();
+            MongoDB dbConnection = new MongoDB(); // Creates an instance to MongoDB Atlas
 
             System.out.println("\nListing Databases:");
             dbConnection.listDatabases();
