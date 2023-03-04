@@ -92,7 +92,7 @@ public class MongoDB {
         try {
             MongoCollection<Document> collections = db.getCollection(collection);
             FindIterable<Document> iterDoc = collections.find();
-            Iterator it = iterDoc.iterator();
+            Iterator<Document> it = iterDoc.iterator();
             System.out.println("\nPrinting out the " + collection + " collection:");
             while (it.hasNext()) {
                 System.out.println(it.next());
