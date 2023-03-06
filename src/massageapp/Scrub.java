@@ -31,4 +31,9 @@ public class Scrub extends Service {
         return minutes;
     }
 
+    @Override
+    public String toString() {
+        return this.getProductType();
+    }
+
 }

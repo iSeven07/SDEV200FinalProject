@@ -39,5 +39,8 @@ public abstract class Service {
         serviceCount++;
         this.serviceID = serviceCount;
     }
+
+    @Override
+    abstract public String toString();
     
 }

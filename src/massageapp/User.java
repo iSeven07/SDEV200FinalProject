@@ -58,5 +58,10 @@ public abstract class User {
         this.userID = numUsers;
     }
 
+    @Override
+    public String toString() {
+        return this.getName();
+    }
+
 
 }

@@ -35,4 +35,9 @@ public class Massage extends Service {
         this.minutes = minutes;
     }
 
+    @Override
+    public String toString() {
+        return this.getStyle();
+    }
+
 }

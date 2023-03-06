@@ -63,25 +63,29 @@ public class Main extends Application {
     private TextField tfFirstName = new TextField();
     private TextField tfLastName = new TextField();
     private TextField tfPhoneNumber = new TextField();
-    private ChoiceBox<String> cbMassage = new ChoiceBox<>();
-    private ChoiceBox<String> cbScrub = new ChoiceBox<>();
-    private ChoiceBox<String> cbTherapist = new ChoiceBox<>();
+    private ChoiceBox<Massage> cbMassage = new ChoiceBox<>();
+    private ChoiceBox<Scrub> cbScrub = new ChoiceBox<>();
+    private ChoiceBox<Therapist> cbTherapist = new ChoiceBox<>();
     private DatePicker dpDate = new DatePicker();
     private ChoiceBox<String> cbTime = new ChoiceBox<>();
     private TextField tfSearch = new TextField();
 
     /** Current User Selections */
-    private Massage selectedMassage;
-    private Scrub selectedScrub;
+    //private Massage selectedMassage;
+    //private Scrub selectedScrub;
     private Therapist selectedTherapist;
     private Appointment selectedAppointment;
-    private ArrayList<Service> services = new ArrayList<Service>();
+    //private ArrayList<Service> services = new ArrayList<Service>(Arrays.asList(null, null));
+    //private ObservableList<Service> services = FXCollections.observableArrayList(null, null);
 
     /** App Collections */
     private ArrayList<Client> clients = new ArrayList<Client>();
-    private ArrayList<Therapist> therapists = new ArrayList<Therapist>();
-    private ArrayList<Massage> massages = new ArrayList<Massage>();
-    private ArrayList<Scrub> scrubs = new ArrayList<Scrub>();
+    //private ArrayList<Therapist> therapists = new ArrayList<Therapist>();
+    private ObservableList<Therapist> therapists = FXCollections.observableArrayList();
+    private ObservableList<Massage> massages = FXCollections.observableArrayList();
+    private ObservableList<Scrub> scrubs = FXCollections.observableArrayList();
+    //private ArrayList<Massage> massages = new ArrayList<Massage>();
+    //private ArrayList<Scrub> scrubs = new ArrayList<Scrub>();
     //private ArrayList<Appointment> appointments = new ArrayList<Appointment>();
     private ObservableList<Appointment> appointmentList = FXCollections.observableArrayList(); // May replace ArrayList<Appointment> for searching
 
@@ -121,9 +125,10 @@ public class Main extends Application {
         tableView.getColumns().add(column6);
 
         // Load appointments into Table
-        for (Appointment appointment : appointmentList) {
-            tableView.getItems().add(appointment);
-        }
+        // for (Appointment appointment : appointmentList) {
+        //     tableView.getItems().add(appointment);
+        // }
+        tableView.getItems().addAll(appointmentList);
 
 
         // Labels
@@ -136,23 +141,21 @@ public class Main extends Application {
         Label lbDate = new Label("Date:");
 
         // Choice Boxes -- Needs Work
-        for (Massage massage : massages) {
-            cbMassage.getItems().add(massage.getStyle());
-        }
-        for (Scrub scrub : scrubs) {
-            cbScrub.getItems().add(scrub.getProductType());
-        }
-        for (Therapist therapist : therapists) {
-            cbTherapist.getItems().add(therapist.getName());
-        }
-
-        // Dialog Box -- Missing Information
-        // Dialog<String> dialog = new Dialog<String>();
-        // dialog.setTitle("Missing Information!");
-        // ButtonType type = new ButtonType("Ok", ButtonData.OK_DONE);
-        // dialog.setContentText("You have missing information.");
-        // dialog.getDialogPane().getButtonTypes().add(type);
-        
+        // for (Massage massage : massages) {
+        //     //cbMassage.getItems().add(massage.getStyle());
+        //     cbMassage.getItems().add(massage);
+        // }
+        // for (Scrub scrub : scrubs) {
+        //     //cbScrub.getItems().add(scrub.getProductType());
+        //     cbScrub.getItems().add(scrub);
+        // }
+        // for (Therapist therapist : therapists) {
+        //     //cbTherapist.getItems().add(therapist.getName());
+        //     cbTherapist.getItems().add(therapist);
+        // }
+        cbMassage.getItems().addAll(massages);
+        cbScrub.getItems().addAll(scrubs);
+        cbTherapist.getItems().addAll(therapists);
 
         // Grid
         GridPane gridPane = new GridPane();
@@ -202,7 +205,15 @@ public class Main extends Application {
                 // Create Appointment
                 Client newClient = new Client(tfFirstName.getText(), tfLastName.getText());
                 newClient.setPhoneNumber(tfPhoneNumber.getText());
-                Appointment newAppointment = new Appointment(newClient, selectedTherapist, services, date);
+
+                ArrayList<Service> tempServices = new ArrayList<Service>();
+
+                tempServices.add(cbMassage.getSelectionModel().getSelectedItem());
+                if (cbScrub.getSelectionModel().getSelectedItem() != null) {
+                    tempServices.add(cbScrub.getSelectionModel().getSelectedItem());
+                }
+                
+                Appointment newAppointment = new Appointment(newClient, selectedTherapist, tempServices, date);
                 
                 // Add Appointment to Table
                 tableView.getItems().add(newAppointment);
@@ -219,15 +230,19 @@ public class Main extends Application {
 
         // Massage Select
         cbMassage.setOnAction(e -> {
-            selectedMassage = massages.get(cbMassage.getSelectionModel().getSelectedIndex());
-            services.add(selectedMassage);
+            //selectedMassage = massages.get(cbMassage.getSelectionModel().getSelectedIndex());
+            //services.add(selectedMassage);
+            //services.set(0, selectedMassage);
+            //System.out.println(((Massage)services.get(0)).getStyle());
             cbScrub.setDisable(false);
         });
 
         // Scrub Select
         cbScrub.setOnAction(e -> {
-            selectedScrub = scrubs.get(cbScrub.getSelectionModel().getSelectedIndex());
-            services.add(selectedScrub);
+            //selectedScrub = scrubs.get(cbScrub.getSelectionModel().getSelectedIndex());
+            //services.add(selectedScrub);
+            //services.set(1, selectedScrub);
+            //System.out.println(((Scrub)services.get(1)).getProductType());
         });
 
         // Delete Button
@@ -246,27 +261,49 @@ public class Main extends Application {
                     tfFirstName.setText(selectedAppointment.getClient().getFirstName());
                     tfLastName.setText(selectedAppointment.getClient().getLastName());
                     tfPhoneNumber.setText(selectedAppointment.getClient().getPhoneNumber());
-                    //cbMassage.setSelectionModel(null); // Work in Progress
+                    selectedTherapist = selectedAppointment.getTherapist();
+                    //System.out.println(selectedTherapist.getName());
+                    //cbTherapist.setValue(therapists.get(0));
+                    cbTherapist.getSelectionModel().select(selectedTherapist);
+                    cbMassage.getSelectionModel().select((Massage)(selectedAppointment.getServices().get(0)));
+                    try {
+                    cbScrub.getSelectionModel().select((Scrub)(selectedAppointment.getServices()).get(1));
+                    } catch (Exception ex) {
+                    // No Scrub
+                    }
                     //cbScrub.setSelectionModel(null); // Work in Progress
-                    //cbTherapist.setSelectionModel(null); // Work in Progress
                     dpDate.setValue(
                             selectedAppointment.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
                     btEditAppointment.setText("Save");
+                    tableView.setDisable(true);
+                    btBookAppointment.setDisable(true);
+                    btDeleteAppointment.setDisable(true);
                 }
                 else {
                     selectedAppointment.getClient().setFirstName(tfFirstName.getText());
                     selectedAppointment.getClient().setLastName(tfLastName.getText());
                     selectedAppointment.getClient().setPhoneNumber(tfPhoneNumber.getText());
-                    
-                    selectedAppointment.setServices(services);
+
+                    ArrayList<Service> tempServices = new ArrayList<Service>();
+
+                    tempServices.add(cbMassage.getSelectionModel().getSelectedItem());
+                    if (cbScrub.getSelectionModel().getSelectedItem() != null) {
+                        tempServices.add(cbScrub.getSelectionModel().getSelectedItem());
+                    }
+                       
+                    selectedAppointment.setServices(tempServices);
                     selectedAppointment.setTherapist(selectedTherapist);
 
                     Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
                     // FUTURE - Add Hours to Date using: date = DateUtils.addHours(date, time) or similar
                     selectedAppointment.setDateTime(date);
                     btEditAppointment.setText("Edit");
+                    tableView.setDisable(false);
+                    btBookAppointment.setDisable(false);
+                    btDeleteAppointment.setDisable(false);
                     tableView.refresh();
+                    clearInput();
                 }
             }
             else {
@@ -316,11 +353,13 @@ public class Main extends Application {
         tfFirstName.setText(null);
         tfLastName.setText(null);
         tfPhoneNumber.setText(null);
+        cbMassage.setValue(null);
+        cbScrub.setValue(null);
+        cbTherapist.setValue(null);
         // cbMassage.setSelectionModel(null); // Work in Progress
         // cbScrub.setSelectionModel(null); // Work in Progress
         // cbTherapist.setSelectionModel(null); // Work in Progress
         dpDate.setValue(null);
-        services.clear();
     }
     
     /** Generate Test Data */
