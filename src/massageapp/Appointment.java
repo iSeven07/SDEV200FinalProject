@@ -69,6 +69,29 @@ public class Appointment {
         this.dateTime = dateTime;
     }
 
+    // Used for Displaying on Data Table
+    public String getClientName() {
+        return this.getClient().getName();
+    }
+    public String getTherapistName() {
+        return this.getTherapist().getName();
+    }
+    public String getServicesString() {
+        String services = "";
+        for (Service service : this.services) {
+            if (service instanceof Massage) {
+                services += ((Massage)service).getStyle();
+            }
+            else {
+                services += ", " + ((Scrub)service).getProductType();
+            }
+        }
+        return services;
+    }
+    public String getClientPhoneNumber() {
+        return this.getClient().getPhoneNumber();
+    }
+
     /** Set unique AppointmentID */
     private void setAppointmentID() {
         appointmentCount++;
