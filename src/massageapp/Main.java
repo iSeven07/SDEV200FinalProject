@@ -194,7 +194,8 @@ public class Main extends Application {
         btBookAppointment.setOnAction( e -> {
 
             if (tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") ||
-                    tfPhoneNumber.getText().trim().equals("")) {
+                    tfPhoneNumber.getText().trim().equals("") || cbMassage.getSelectionModel().getSelectedItem() == null ||
+                    cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null) {
                 BookingDialog missingDialog = new BookingDialog("Missing Information!", "You have missing information.");
                 missingDialog.showAndWait();
             }
@@ -369,7 +370,7 @@ public class Main extends Application {
     client1.setPhoneNumber("123-456-7890");
     clients.add(client1);
 
-    Client client2 = new Client("Jane", "Doe");
+    Client client2 = new Client("Julie", "Sans");
     client2.setPhoneNumber("123-455-6654");
     clients.add(client2);
 

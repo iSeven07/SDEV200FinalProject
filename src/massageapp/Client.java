@@ -12,7 +12,7 @@ public class Client extends User {
     private String phoneNumber;
 
     /** Constructors */
-    Client() {
+    public Client() {
 
     }
     Client(String firstName, String lastName) {
@@ -26,4 +26,7 @@ public class Client extends User {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    /** For MongoDB */
+
 }

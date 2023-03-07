@@ -13,7 +13,7 @@ public class Scrub extends Service {
     private static int minutes = 30;
 
     /** Constructors */
-    Scrub() {
+    public Scrub() {
     }
     Scrub(String productType, double price) {
         super(price);

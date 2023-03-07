@@ -12,7 +12,7 @@ public class Therapist extends User {
     private String licenseNumber;
 
     /** Constructors */
-    Therapist() {
+    public Therapist() {
 
     }
     Therapist(String firstName, String lastName) {

@@ -33,77 +33,109 @@ import java.util.Arrays;
 
 /** Test Application that Tests Classes */
 public class TestClasses {
-    // public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
-    //     // Create Class Objects
-    //     System.out.println("\nTesting Classes...\n");
+        // Create Class Objects
+        System.out.println("\nTesting Classes...\n");
 
-    //     /** User Creation */
-    //     Client client1 = new Client("John", "Smith");
-    //     client1.setPhoneNumber("123-456-7890");
-    //     Therapist therapist1 = new Therapist("Jane", "Doe");
-    //     therapist1.setLicenseNumber("LNO1234567890");
+        /** User Creation */
+        Client client1 = new Client("John", "Smith");
+        client1.setPhoneNumber("123-456-7890");
+        Therapist therapist1 = new Therapist("Jane", "Doe");
+        therapist1.setLicenseNumber("LNO1234567890");
 
-    //     /** Service Creation */
-    //     Massage massage1 = new Massage("Swedish Massage", 90, 80.00);
-    //     Scrub scrub1 = new Scrub("Sugar Scrub", 30.00);
+        /** Service Creation */
+        Massage massage1 = new Massage("Swedish Massage", 90, 80.00);
+        Scrub scrub1 = new Scrub("Sugar Scrub", 30.00);
 
-    //     /** Appointment Creation */
-    //     Appointment appointment1 = new Appointment(client1, therapist1, new ArrayList<Service>(Arrays.asList(massage1, scrub1)), new java.util.Date());
+        /** Appointment Creation */
+        Appointment appointment1 = new Appointment(client1, therapist1, new ArrayList<Service>(Arrays.asList(massage1, scrub1)), new java.util.Date());
 
-    //     /** Print Objects */
-    //     print(client1);
-    //     print(therapist1);
-    //     print(massage1);
-    //     print(scrub1);
-    //     print(appointment1);
+        /** Print Objects */
+        print(client1);
+        print(therapist1);
+        print(massage1);
+        print(scrub1);
+        print(appointment1);
 
-    //     /** Test MongoDB Connection */
-    //     // NOTE: Connection should be allowed from anywhere in the world; however, a connection denied
-    //     //       message may still happen. If so, a fix will be found or alternatively the instructor's IP
-    //     //       address can be added to the allowed connections list. Upon successful connection, the list
-    //     //       will populate test collection's held within the MongoDB Atlas cluster.
+        /** Test MongoDB Connection */
+        // NOTE: Connection should be allowed from anywhere in the world; however, a connection denied
+        //       message may still happen. If so, a fix will be found or alternatively the instructor's IP
+        //       address can be added to the allowed connections list. Upon successful connection, the list
+        //       will populate test collection's held within the MongoDB Atlas cluster.
         
-    //     try{
-    //         System.out.println("Testing MongoDB Atlas connection... Please wait.");
-    //         MongoDB dbConnection = new MongoDB(); // Creates an instance to MongoDB Atlas
+        try{
+            System.out.println("Testing MongoDB Atlas connection... Please wait.");
+            MongoDB dbConnection = new MongoDB(); // Creates an instance to MongoDB Atlas
 
-    //         System.out.println("\nListing Databases:");
-    //         dbConnection.listDatabases();
+            System.out.println("\nListing Databases:");
+            dbConnection.listDatabases();
 
-    //         System.out.println("\nListing Collections in 'pseudo-massage':");
-    //         dbConnection.listCollections();
+            System.out.println("\nListing Collections in 'pseudo-massage':");
+            dbConnection.listCollections();
 
-    //         // Insert Created Objects into DB
-    //         System.out.println("\nInserting Objects...");
-    //         dbConnection.insertObject(client1);
-    //         dbConnection.insertObject(therapist1);
-    //         dbConnection.insertObject(massage1);
-    //         dbConnection.insertObject(scrub1);
-    //         dbConnection.insertObject(appointment1);
+            // Insert Created Objects into DB
+            System.out.println("\nInserting Objects...");
+            dbConnection.insertObject(client1);
+            dbConnection.insertObject(therapist1);
+            dbConnection.insertObject(massage1);
+            dbConnection.insertObject(scrub1);
+            dbConnection.insertObject(appointment1);
 
-    //         //Print Collections
-    //         dbConnection.listDocuments("clients");
-    //         dbConnection.listDocuments("therapists");
-    //         dbConnection.listDocuments("massages");
-    //         dbConnection.listDocuments("scrubs");
-    //         dbConnection.listDocuments("appointments");
+            //Print Collections
+            dbConnection.listDocuments("clients");
+            dbConnection.listDocuments("therapists");
+            dbConnection.listDocuments("massages");
+            dbConnection.listDocuments("scrubs");
+            dbConnection.listDocuments("appointments");
 
-    //         // Delete Objects from DB
-    //         dbConnection.deleteObject(client1);
-    //         dbConnection.deleteObject(therapist1);
-    //         dbConnection.deleteObject(massage1);
-    //         dbConnection.deleteObject(scrub1);
-    //         dbConnection.deleteObject(appointment1);
+            //Try to Retrieve to new objects
+            System.out.println("\nAttempting to retrieve MongoDB collections and make Java Objects:");
+            try {
+                System.out.println("\nScrubs: ");
+                ArrayList<Scrub> scrubList = dbConnection.getCollection("scrubs", Scrub.class);
+                for (Scrub scrub : scrubList) {
+                    System.out.println(scrub);
+                    System.out.println(scrub.getPrice());
+                }
+                System.out.println("\nMassages: ");
+                ArrayList<Massage> massageList = dbConnection.getCollection("massages", Massage.class);
+                for (Massage massage : massageList) {
+                    System.out.println(massage);
+                    System.out.println(massage.getPrice());
+                }
+                System.out.println("\nClients: ");
+                ArrayList<Client> clientList = dbConnection.getCollection("clients", Client.class);
+                for (Client client : clientList) {
+                    System.out.println(client);
+                    System.out.println(client.getPhoneNumber());
+                }
+                System.out.println("\nTherapists: ");
+                ArrayList<Therapist> therapistList = dbConnection.getCollection("therapists", Therapist.class);
+                for (Therapist therapist : therapistList) {
+                    System.out.println(therapist);
+                    System.out.println(therapist.getLicenseNumber());
+                }
 
-    //         System.out.println();
-    //     }catch(Exception error){
-    //         System.out.println("Something went wrong...\nError Information:\n");
-    //         System.out.println(error.getMessage());
-    //     }
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+
+            // Delete Objects from DB
+            dbConnection.deleteObject(client1);
+            dbConnection.deleteObject(therapist1);
+            dbConnection.deleteObject(massage1);
+            dbConnection.deleteObject(scrub1);
+            dbConnection.deleteObject(appointment1);
+
+            System.out.println();
+        }catch(Exception error){
+            System.out.println("Something went wrong...\nError Information:\n");
+            System.out.println(error.getMessage());
+        }
 
 
-    // }
+    }
 
     /** Print Objects */
     public static void print(Object obj) {

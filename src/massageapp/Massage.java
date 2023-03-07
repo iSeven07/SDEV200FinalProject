@@ -13,7 +13,7 @@ public class Massage extends Service {
     private int minutes;
 
     /** Constructors */
-    Massage() {
+    public Massage() {
     }
     Massage(String style, int minutes, double price) {
         super(price);

@@ -40,7 +40,7 @@ import java.util.List;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-public class MongoDB {
+public class MongoDB<E> {
 
     private static MongoClient instance = null;
     private static MongoDatabase db; 
@@ -173,6 +173,23 @@ public class MongoDB {
         } catch (Exception err) {
             System.out.println("Delete was not successful. Info:\n" + err.getMessage());
         }
+    }
+
+    /** Retrieves Collections and returns as objects */
+    public ArrayList<E> getCollection(String collection, Class<E> c) {
+        // ArrayList<Client> clientList = new ArrayList<Client>();
+
+        MongoCollection<E> collectionList = db.getCollection(collection, c);
+        // FindIterable<Client> iterDoc = clients.find();
+        // Iterator<Client> it = iterDoc.iterator();
+
+        // while (it.hasNext()) {
+        //     //System.out.println(it.next());
+        //     clientList.add(new Client())
+        // }
+        ArrayList<E> docs = collectionList.find(new Document(), c).into(new ArrayList<>());
+
+        return docs;
     }
 
 }
