@@ -46,9 +46,11 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 //import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 //import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
@@ -63,6 +65,7 @@ public class Main extends Application {
     private Button btBookAppointment = new Button("Book");
     private Button btEditAppointment = new Button("Edit");
     private Button btDeleteAppointment = new Button("Delete");
+    private Button btCancelEdit = new Button("Cancel Edit");
     private TextField tfFirstName = new TextField();
     private TextField tfLastName = new TextField();
     private TextField tfPhoneNumber = new TextField();
@@ -182,6 +185,7 @@ public class Main extends Application {
         gridPane.add(btBookAppointment, 5, 0);
         gridPane.add(btEditAppointment, 5, 1);
         gridPane.add(btDeleteAppointment, 5, 2);
+        gridPane.add(btCancelEdit, 5, 3);
 
         // UI Settings
         cbScrub.setDisable(true);
@@ -191,17 +195,23 @@ public class Main extends Application {
         btBookAppointment.setPrefWidth(100);
         btEditAppointment.setPrefWidth(100);
         btDeleteAppointment.setPrefWidth(100);
+        btCancelEdit.setPrefWidth(100);
+        btCancelEdit.setVisible(false);
+        
+        ScrollPane sp = new ScrollPane();
+        sp.setContent(statusText);
+        sp.setHbarPolicy(ScrollBarPolicy.NEVER);
+        sp.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+        sp.setVvalue(1.0);
+        sp.setMinHeight(50);
+
 
         /** Process Events */
 
         // Book Button
         btBookAppointment.setOnAction( e -> {
 
-            if (tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") ||
-                    tfPhoneNumber.getText().trim().equals("") || cbMassage.getSelectionModel().getSelectedItem() == null ||
-                    cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null) {
-                BookingDialog missingDialog = new BookingDialog("Missing Information!", "You have missing information.");
-                missingDialog.showAndWait();
+            if (checkInput()) {
             }
             else {
                 Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -272,11 +282,17 @@ public class Main extends Application {
 
         // Delete Button
         btDeleteAppointment.setOnAction(e -> {
+            if (tableView.getSelectionModel().getSelectedItem() != null) {
             Appointment deleteApt = tableView.getSelectionModel().getSelectedItem();
             db.deleteObject(deleteApt);
             tableView.getItems().remove(deleteApt);
             BookingDialog  deleteDialog = new BookingDialog("Delete Appointment", "Booking #" + deleteApt.getAppointmentID() + " on " + deleteApt.getDateTime() + " has been deleted.");
             deleteDialog.showAndWait();
+            }
+            else {
+                BookingDialog deleteDialog = new BookingDialog("Deletion Issue", "You do not have an appointment selected.");
+                deleteDialog.showAndWait();
+            }
         });
 
         // Edit Button
@@ -333,11 +349,12 @@ public class Main extends Application {
                             selectedAppointment.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
                     btEditAppointment.setText("Save");
+                    btCancelEdit.setVisible(true);
                     tableView.setDisable(true);
                     btBookAppointment.setDisable(true);
                     btDeleteAppointment.setDisable(true);
                 }
-                else {
+                else if (!checkInput()) {
 // NEED TO FIX
                     // selectedAppointment.getClient().setFirstName(tfFirstName.getText());
                     // selectedAppointment.getClient().setLastName(tfLastName.getText());
@@ -387,6 +404,16 @@ public class Main extends Application {
             }
         });
 
+        btCancelEdit.setOnAction(e -> {
+            clearInput();
+            btEditAppointment.setText("Edit");
+            tableView.setDisable(false);
+            btBookAppointment.setDisable(false);
+            btDeleteAppointment.setDisable(false);
+            btCancelEdit.setVisible(false);
+            cbScrub.setDisable(true);
+        });
+
 
         // Create a scene and place it in the stage
 
@@ -402,7 +429,7 @@ public class Main extends Application {
         hbox2.setAlignment(Pos.CENTER);
         hbox2.setPadding(new Insets(0, 10, 10, 0));
 
-        VBox vbox = new VBox(hbox2, gridPane, hbox, tableView, statusText);
+        VBox vbox = new VBox(hbox2, gridPane, hbox, tableView, sp);
         Scene scene = new Scene(vbox, 700, 500);
         primaryStage.setTitle("Pseudo Massage Booking App");
         primaryStage.setScene(scene);
@@ -419,17 +446,19 @@ public class Main extends Application {
         try {
             statusText.setText("\tConnecting to database...");
             db = new MongoDB();
-            statusText.setText("\tLoading database...");
+            statusText.setText(statusText.getText() + "\n\tConnected to database successfully.");
+            statusText.setText(statusText.getText() + "\n\tLoading database...");
             Store.setScrubs(db.getCollection("scrubs", Scrub.class));
             Store.setMassages(db.getCollection("massages", Massage.class));
             Store.setClients(db.getCollection("clients", Client.class));
             Store.setTherapists(db.getCollection("therapists", Therapist.class));
             Store.setAppointments(db.getCollection("appointments", Appointment.class));
-            statusText.setText("\tConnected to database successfully.");
+            statusText.setText(statusText.getText() + "\n\tLoaded collections successfully.");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            statusText.setText("\tConnection to database failed.");
+            statusText.setText(statusText.getText() + "\n\tConnection to database failed.");
         }
+
     }
 
     /** Clear User Input */
@@ -444,6 +473,17 @@ public class Main extends Application {
         // cbScrub.setSelectionModel(null); // Work in Progress
         // cbTherapist.setSelectionModel(null); // Work in Progress
         dpDate.setValue(null);
+    }
+
+    public boolean checkInput() {
+        if (tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") ||
+                tfPhoneNumber.getText().trim().equals("") || cbMassage.getSelectionModel().getSelectedItem() == null ||
+                cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null) {
+            BookingDialog missingDialog = new BookingDialog("Missing Information!", "You have missing information.");
+            missingDialog.showAndWait();
+            return true;
+        }
+        return false;
     }
     
     /** Generate Test Data */
