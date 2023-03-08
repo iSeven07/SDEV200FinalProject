@@ -15,6 +15,7 @@ public class Scrub extends Service {
     /** Constructors */
     public Scrub() {
     }
+
     Scrub(String productType, double price) {
         super(price);
         this.productType = productType;

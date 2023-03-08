@@ -9,6 +9,9 @@ package massageapp;
 
 import java.util.Date;
 
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+//import org.bson.codecs.pojo.annotations.BsonProperty;
+
 public abstract class User {
     /** Variables */
     private int userID;
@@ -18,14 +21,16 @@ public abstract class User {
 
     /** Constructors */
     protected User() {
-        this.creationDate = new Date();
-        setUserID();
+        //this.creationDate = new Date();
+        //setUserID();
+        //this.userID = numUsers - (Store.getClients().size() + Store.getTherapists().size());
+        ++numUsers;
     }
     protected User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.creationDate = new Date();
-        setUserID();
+        this.userID = numUsers++;
     }
 
     /** Accessors and Mutators */
@@ -38,9 +43,17 @@ public abstract class User {
     public int getUserID() {
         return this.userID;
     }
+
+    // MongoDB needs this set to public, although would prefer it be protected
+    public void setUserID(int id) {
+        this.userID = id;
+    }
+
+    @BsonIgnore
     public String getName() {
         return this.firstName + " " + this.lastName;
     }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -49,13 +62,6 @@ public abstract class User {
     }
     public Date getCreationDate() {
         return this.creationDate;
-    }
-
-
-    /** Sets unique userID */
-    private void setUserID() {
-        numUsers++;
-        this.userID = numUsers;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package massageapp;
 
+//import org.bson.codecs.pojo.annotations.BsonCreator;
+//import org.bson.codecs.pojo.annotations.BsonId;
+
 /*
  * Program: FinalProject - MassageApp
  * Author: Aaron Corns
@@ -15,6 +18,7 @@ public class Massage extends Service {
     /** Constructors */
     public Massage() {
     }
+
     Massage(String style, int minutes, double price) {
         super(price);
         this.style = style;

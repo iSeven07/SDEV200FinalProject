@@ -49,7 +49,7 @@ public class TestClasses {
         Scrub scrub1 = new Scrub("Sugar Scrub", 30.00);
 
         /** Appointment Creation */
-        Appointment appointment1 = new Appointment(client1, therapist1, new ArrayList<Service>(Arrays.asList(massage1, scrub1)), new java.util.Date());
+        Appointment appointment1 = new Appointment(client1.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage1.getServiceId(), scrub1.getServiceId())), new java.util.Date());
 
         /** Print Objects */
         print(client1);
@@ -57,6 +57,9 @@ public class TestClasses {
         print(massage1);
         print(scrub1);
         print(appointment1);
+
+        /** Test Creation of Store */
+        //Store store = new Store();
 
         /** Test MongoDB Connection */
         // NOTE: Connection should be allowed from anywhere in the world; however, a connection denied
@@ -93,29 +96,47 @@ public class TestClasses {
             System.out.println("\nAttempting to retrieve MongoDB collections and make Java Objects:");
             try {
                 System.out.println("\nScrubs: ");
-                ArrayList<Scrub> scrubList = dbConnection.getCollection("scrubs", Scrub.class);
-                for (Scrub scrub : scrubList) {
+                Store.setScrubs(dbConnection.getCollection("scrubs", Scrub.class));
+                for (Scrub scrub : Store.getScrubs()) {
+                    System.out.println(scrub.getServiceId());
                     System.out.println(scrub);
                     System.out.println(scrub.getPrice());
                 }
                 System.out.println("\nMassages: ");
-                ArrayList<Massage> massageList = dbConnection.getCollection("massages", Massage.class);
-                for (Massage massage : massageList) {
+                Store.setMassages(dbConnection.getCollection("massages", Massage.class));
+                for (Massage massage : Store.getMassages()) {
+                    System.out.println(massage.getServiceId());
                     System.out.println(massage);
                     System.out.println(massage.getPrice());
                 }
                 System.out.println("\nClients: ");
-                ArrayList<Client> clientList = dbConnection.getCollection("clients", Client.class);
-                for (Client client : clientList) {
+                Store.setClients(dbConnection.getCollection("clients", Client.class));
+                for (Client client : Store.getClients()) {
+                    System.out.println(client.getUserID());
                     System.out.println(client);
                     System.out.println(client.getPhoneNumber());
                 }
                 System.out.println("\nTherapists: ");
-                ArrayList<Therapist> therapistList = dbConnection.getCollection("therapists", Therapist.class);
-                for (Therapist therapist : therapistList) {
+                Store.setTherapists(dbConnection.getCollection("therapists", Therapist.class));
+                for (Therapist therapist : Store.getTherapists()) {
+                    System.out.println(therapist.getUserID());
                     System.out.println(therapist);
                     System.out.println(therapist.getLicenseNumber());
                 }
+                // Fails constructing Appointments
+                // Either need to create a custom codec or rethink how Client, Therapist, and Services are stored
+                System.out.println("\nAppointments: ");
+                Store.setAppointments(dbConnection.getCollection("appointments", Appointment.class));
+                for (Appointment appointment : Store.getAppointments()) {
+                    System.out.println(appointment);
+                    System.out.println(appointment.getCost());
+
+                    System.out.println("\nSize: " + appointment.getServices().size());
+                    System.out.println("Massage ID: " + appointment.getServices().get(0));
+                    System.out.println("Scrub ID: " +  appointment.getServices().get(1));
+                    System.out.println("Massage Price: " + Store.getMassages().get(0).getPrice());
+                }
+                System.out.println("\nSuccess!");
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
@@ -162,23 +183,23 @@ public class TestClasses {
                 System.out.println("Service: " + ((Scrub)obj).getProductType());
                 System.out.println("Length: " + Scrub.getMinutes());
             }
-            System.out.println("Service ID: " + ((Service)obj).getServiceID());
+            System.out.println("Service ID: " + ((Service)obj).getServiceId());
             System.out.printf("Price: $%.2f%n", ((Service)obj).getPrice());
         }
         /** Print Appointment Related Information if Appointment */
         else if (obj instanceof Appointment) {
-            System.out.println("Appointment Date/Time: " + ((Appointment)obj).getDateTime());
-            System.out.println("AppointmentID: " + ((Appointment)obj).getAppointmentID());
-            System.out.println("Client Name: " + (((Appointment)obj).getClient()).getName());
-            System.out.println("Therapist Name: " + (((Appointment)obj).getTherapist()).getName());
-            System.out.print("Services:");
-            for (Service service : ((Appointment)obj).getServices()) {
-                if (service instanceof Massage)
-                    System.out.print(" " + ((Massage)service).getStyle());
-                else
-                    System.out.print(", " + ((Scrub)service).getProductType());
-            }
-            System.out.printf("\nAppointment Cost: $%.2f%n", ((Appointment)obj).getCost());
+            // System.out.println("Appointment Date/Time: " + ((Appointment)obj).getDateTime());
+            // System.out.println("AppointmentID: " + ((Appointment)obj).getAppointmentID());
+            // System.out.println("Client Name: " + (((Appointment)obj).getClient()).getName());
+            // System.out.println("Therapist Name: " + (((Appointment)obj).getTherapist()).getName());
+            // System.out.print("Services:");
+            // for (Service service : ((Appointment)obj).getServices()) {
+            //     if (service instanceof Massage)
+            //         System.out.print(" " + ((Massage)service).getStyle());
+            //     else
+            //         System.out.print(", " + ((Scrub)service).getProductType());
+            // }
+            // System.out.printf("\nAppointment Cost: $%.2f%n", ((Appointment)obj).getCost());
         }
         System.out.println("\n------------------\n");
     }

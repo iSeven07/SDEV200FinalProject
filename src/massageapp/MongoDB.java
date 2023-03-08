@@ -7,12 +7,7 @@ package massageapp;
  * Class: MongoDB Connection Class
  * Description: This class allows the program to communicate with our MongoDB Atlas Cluster. Drivers files
  *              are required and are located in the lib\ folder. If you see any syntax or runtime errors related
- *              to MongoDB, it is most likely your classpath is not properly configured. For simplicity, it is possible
- *              to compile and run the program from Command Line (NOT Terminal) using the following commands. You will 
- *              need to make sure you navigate, in Command Prompt, to the src\ folder first.
- * 
- *               javac -classpath ..\lib\*;. massageapp/*.java
- *               java -classpath ..\lib\*;. massageapp/TestClasses
+ *              to MongoDB, it is most likely your classpath is not properly configured. 
  */
 
 //import java.net.UnknownHostException;
@@ -26,10 +21,13 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 //import com.mongodb.client.model.FindOneAndReplaceOptions;
 //import com.mongodb.client.model.ReturnDocument;
+//import com.mongodb.client.model.FindOneAndReplaceOptions;
+//import com.mongodb.client.model.ReturnDocument;
 
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+//import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,10 +38,12 @@ import java.util.List;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-public class MongoDB<E> {
+public class MongoDB {
 
     private static MongoClient instance = null;
     private static MongoDatabase db; 
+
+
 
     /** Create Database Connection */
     public MongoDB() throws InstantiationException {
@@ -154,15 +154,15 @@ public class MongoDB<E> {
             }
             else if (o instanceof Massage) {
                 MongoCollection<Massage> massages = db.getCollection("massages", Massage.class);
-                int serviceID = ((Massage)o).getServiceID();
-                massages.deleteOne(Filters.eq("serviceID", serviceID));
-                System.out.println("\nMassage " + ((Massage)o).getStyle() + " with ID " + ((Massage)o).getServiceID() + " has been removed from the database.");
+                int serviceId = ((Massage)o).getServiceId();
+                massages.deleteOne(Filters.eq("serviceId", serviceId));
+                System.out.println("\nMassage " + ((Massage)o).getStyle() + " with ID " + ((Massage)o).getServiceId() + " has been removed from the database.");
             }
             else if (o instanceof Scrub) {
                 MongoCollection<Scrub> scrubs = db.getCollection("scrubs", Scrub.class);
-                int serviceID = ((Scrub)o).getServiceID();
-                scrubs.deleteOne(Filters.eq("serviceID", serviceID));
-                System.out.println("\nScrub " + ((Scrub)o).getProductType() + " with ID " + ((Scrub)o).getServiceID() + " has been removed from the database.");
+                int serviceId = ((Scrub)o).getServiceId();
+                scrubs.deleteOne(Filters.eq("serviceId", serviceId));
+                System.out.println("\nScrub " + ((Scrub)o).getProductType() + " with ID " + ((Scrub)o).getServiceId() + " has been removed from the database.");
             }
             else if (o instanceof Appointment) {
                 MongoCollection<Appointment> appointments = db.getCollection("appointments", Appointment.class);
@@ -176,7 +176,7 @@ public class MongoDB<E> {
     }
 
     /** Retrieves Collections and returns as objects */
-    public ArrayList<E> getCollection(String collection, Class<E> c) {
+    public <E> ArrayList<E> getCollection(String collection, Class<E> c) {
         // ArrayList<Client> clientList = new ArrayList<Client>();
 
         MongoCollection<E> collectionList = db.getCollection(collection, c);
@@ -191,5 +191,19 @@ public class MongoDB<E> {
 
         return docs;
     }
+
+    public void updateAppointment(Appointment appointment) {
+        try {
+        MongoCollection<Appointment> apptCol = db.getCollection("appointments", Appointment.class);
+        Document filterByAppointmentID = new Document("appointmentID", appointment.getAppointmentID());
+        //indOneAndReplaceOptions returnDocAfterReplace = new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER);
+        apptCol.findOneAndReplace(filterByAppointmentID, appointment);
+        System.out.println("Appointment replaced.");
+        } catch (Exception ex) {
+            System.out.println("Failed to update.");
+        }
+    }
+
+    
 
 }
