@@ -139,7 +139,7 @@ public class Appointment {
             }
         }
         for(Scrub scrub : Store.getScrubs()) {
-            if(scrub.getServiceId() == this.services.get(1)) {
+            if(this.services.size() > 1 && scrub.getServiceId() == this.services.get(1)) {
                 services += ", " + scrub.getProductType();
             }
         }

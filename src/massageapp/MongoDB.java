@@ -204,6 +204,18 @@ public class MongoDB {
         }
     }
 
+    public void updateClient(Client client) {
+        try {
+        MongoCollection<Client> apptCol = db.getCollection("clients", Client.class);
+        Document filterByUserID = new Document("userID", client.getUserID());
+        //indOneAndReplaceOptions returnDocAfterReplace = new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER);
+        apptCol.findOneAndReplace(filterByUserID, client);
+        System.out.println("Client replaced.");
+        } catch (Exception ex) {
+            System.out.println("Failed to update.");
+        }
+    }
+
     
 
 }

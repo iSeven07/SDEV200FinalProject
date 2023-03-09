@@ -77,6 +77,7 @@ public class Main extends Application {
     //private Scrub selectedScrub;
     private Therapist selectedTherapist;
     private Appointment selectedAppointment;
+    private Client selectedClient;
     //private ArrayList<Service> services = new ArrayList<Service>(Arrays.asList(null, null));
     //private ObservableList<Service> services = FXCollections.observableArrayList(null, null);
 
@@ -303,14 +304,29 @@ public class Main extends Application {
                     // tfLastName.setText(selectedAppointment.getClient().getLastName());
                     // tfPhoneNumber.setText(selectedAppointment.getClient().getPhoneNumber());
                     // selectedTherapist = selectedAppointment.getTherapist();
-
                     //System.out.println(Store.getClients().get(selectedAppointment.getClient() - 1).getFirstName());
-                    tfFirstName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getFirstName());
-                    tfLastName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getLastName());
-                    tfPhoneNumber.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getPhoneNumber());
+
+                    for (Client client : Store.getClients()) {
+                        if (client.getUserID() == selectedAppointment.getClient()) {
+                            selectedClient = client;
+                        }
+                    }
+
+                    try {
+                    // tfFirstName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getFirstName());
+                    // tfLastName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getLastName());
+                    // tfPhoneNumber.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getPhoneNumber());
+                    tfFirstName.setText(selectedClient.getFirstName());
+                    tfLastName.setText(selectedClient.getLastName());
+                    tfPhoneNumber.setText(selectedClient.getPhoneNumber());
+
                     //cbTherapist.getSelectionModel().select(Store.getTherapists().get(selectedAppointment.getTherapist() - 1));
                     //cbTherapist.setValue(Store.getTherapists().get(selectedAppointment.getTherapist() - 1));
                     //System.out.println(Store.getTherapists().get(selectedAppointment.getTherapist() - 3).getName());
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
+                        System.out.println("Client in Array: " + (selectedAppointment.getClient() - 1));
+                    }
 
                     for (Therapist therapist : Store.getTherapists()) {
                         if (therapist.getUserID() == selectedAppointment.getTherapist()) {
@@ -336,12 +352,11 @@ public class Main extends Application {
                         }
                     }
                     } catch (Exception ex) {
-                    // No Scrub
+                        System.out.println("No scrub found. Continuing...");
                     }
 
                     //cbScrub.setSelectionModel(null); // Work in Progress
-                    dpDate.setValue(
-                            selectedAppointment.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    dpDate.setValue(selectedAppointment.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
                     btEditAppointment.setText("Save");
                     btCancelEdit.setVisible(true);
@@ -360,6 +375,7 @@ public class Main extends Application {
                             client.setFirstName(tfFirstName.getText());
                             client.setLastName(tfLastName.getText());
                             client.setPhoneNumber(tfPhoneNumber.getText());
+                            db.updateClient(client);
                         }
                     }
 
