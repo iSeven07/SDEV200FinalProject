@@ -53,6 +53,7 @@ public class Store {
     public static void addAppointment(Appointment appointment) {
         appointments.add(appointment);
     }
+
     
 
 }

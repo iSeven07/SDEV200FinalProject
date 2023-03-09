@@ -23,8 +23,9 @@ import java.util.Arrays;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-//import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
@@ -91,6 +92,7 @@ public class Main extends Application {
     //private ArrayList<Scrub> scrubs = new ArrayList<Scrub>();
     //private ArrayList<Appointment> appointments = new ArrayList<Appointment>();
     private ObservableList<Appointment> appointmentList = FXCollections.observableArrayList(); // May replace ArrayList<Appointment> for searching
+    private FilteredList<Appointment> filteredList;
 
 
     @Override
@@ -98,6 +100,9 @@ public class Main extends Application {
     
         load(); // Populate Application Data (MongoDB)
         //testData();
+
+        appointmentList = FXCollections.observableArrayList(Store.getAppointments());
+        filteredList = new FilteredList<>(appointmentList);
 
         // Filtered List will be used for searching the TableView
         //FilteredList<Appointment> filteredAppointments = new FilteredList<>(appointmentList, p -> true);
@@ -131,7 +136,8 @@ public class Main extends Application {
         // for (Appointment appointment : appointmentList) {
         //     tableView.getItems().add(appointment);
         // }
-        tableView.getItems().addAll(Store.getAppointments());
+        //tableView.getItems().addAll(Store.getAppointments());
+        tableView.setItems(filteredList); // Set tableView to the filtered list
 
 
         // Labels
@@ -244,11 +250,20 @@ public class Main extends Application {
                 Appointment newAppointment = new Appointment(newClient.getUserID(), selectedTherapist.getUserID(), tempServices, date);
 
                 // Add Appointment to DB and Store
-                Store.addAppointment(newAppointment);
+                //Store.addAppointment(newAppointment);
+                appointmentList.add(newAppointment); // ObservableList should automatically update the Store Arraylist
+                //filteredList.add(newAppointment); // add to filter
                 db.insertObject(newAppointment);
+
+                // There is a better method to update ObservableList when its watched list changes... however,
+                // this works for now as more research is needed on ObservableList listeners.
+                //filteredList = new FilteredList<>(FXCollections.observableArrayList(Store.getAppointments()));
+                //tableView.setItems(filteredList);
                 
                 // Add Appointment to Table
-                tableView.getItems().add(newAppointment);
+                //tableView.getItems().add(newAppointment);
+                
+
 
                 clearInput();
             }     
@@ -281,7 +296,18 @@ public class Main extends Application {
             if (tableView.getSelectionModel().getSelectedItem() != null) {
             Appointment deleteApt = tableView.getSelectionModel().getSelectedItem();
             db.deleteObject(deleteApt);
-            tableView.getItems().remove(deleteApt);
+
+            //Store.getAppointments().remove(deleteApt);
+            appointmentList.remove(deleteApt); // ObservableList should automatically remove the object from the Store ArrayList
+            //filteredList.remove(deleteApt);
+            //tableView.getItems().remove(deleteApt);
+            //filteredList.remove(deleteApt);
+
+            // There is a better method to update ObservableList when its watched list changes... however,
+            // this works for now as more research is needed on ObservableList listeners.
+            //filteredList = new FilteredList<>(FXCollections.observableArrayList(Store.getAppointments()));
+            //tableView.setItems(filteredList);
+        
             BookingDialog  deleteDialog = new BookingDialog("Delete Appointment", "Booking #" + deleteApt.getAppointmentID() + " on " + deleteApt.getDateTime() + " has been deleted.");
             deleteDialog.showAndWait();
             }
@@ -425,6 +451,30 @@ public class Main extends Application {
             cbScrub.setDisable(true);
         });
 
+        // Searching
+        tfSearch.textProperty().addListener((observable, oldValue, newValue) -> {
+            filteredList.setPredicate(appointment -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true; // show full list
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                return appointment.getClientName().toLowerCase().contains(lowerCaseFilter);
+            });
+        });
+
+        // List Changes (ObservableList)
+        appointmentList.addListener((ListChangeListener<Appointment>) change -> {
+            while (change.next()) {
+                if (change.wasAdded()) {
+                    System.out.println("Added: " + change.getAddedSubList() + " to Data Store.");
+                    //tableView.getItems().addAll(change.getAddedSubList());
+                }
+                else if (change.wasRemoved()) {
+                    System.out.println("Removed: " + change.getRemoved() + " from Data Store.");
+                    //tableView.getItems().removeAll(change.getRemoved());
+                }
+            }
+        });
 
         // Create a scene and place it in the stage
 
@@ -540,8 +590,8 @@ public class Main extends Application {
     Appointment appointment1 = new Appointment(client1.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage1.getServiceId(), scrub1.getServiceId())), new java.util.Date());
     Appointment appointment2 = new Appointment(client2.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage2.getServiceId(), scrub2.getServiceId())), new java.util.Date());
     
-    appointmentList.add(appointment1);
-    appointmentList.add(appointment2);
+    //appointmentList.add(appointment1);
+    //appointmentList.add(appointment2);
 
     db.insertObject(appointment1);
     db.insertObject(appointment2);
