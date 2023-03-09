@@ -7,12 +7,7 @@ package massageapp;
  * Course: SDEV-200
  * Last Update: 3-5-2023
  * 
- * Notes: The application is still a work in progress. There are several events that currently work; however, not everything is completely
- *        functional. For example, the Choice Boxes are not set to the proper selection when editing a selected appointment.
- * 
- *         There have also been some complications in excpecting a DatePicker to have a Time Selection. Also, the application does attempt 
- *         to connect to the MongoDB Atlas cluster; however, no data is currently exchanged. Additional methods need to be implemented to 
- *         take stored collection data from MongoDB and populate them into new objects using the POJO (Plain Old Java Object) method.
+ * Notes: The application is still a work in progress. 
  * 
  */
 
