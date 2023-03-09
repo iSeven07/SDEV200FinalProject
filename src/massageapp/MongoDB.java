@@ -192,6 +192,7 @@ public class MongoDB {
         return docs;
     }
 
+    /** Updates Appointments in the DB */
     public void updateAppointment(Appointment appointment) {
         try {
         MongoCollection<Appointment> apptCol = db.getCollection("appointments", Appointment.class);
@@ -204,6 +205,7 @@ public class MongoDB {
         }
     }
 
+    /** Updates Clients in the DB */
     public void updateClient(Client client) {
         try {
         MongoCollection<Client> apptCol = db.getCollection("clients", Client.class);

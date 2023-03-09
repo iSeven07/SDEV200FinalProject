@@ -5,22 +5,20 @@ package massageapp;
  * Author: Aaron Corns
  * Date: 2-22-2023
  * Course: SDEV-200
- * Last Update: 3-5-2023
+ * Last Update: 3-9-2023
  * 
  * Notes: The application is still a work in progress. 
  * 
  */
 
-//import java.time.LocalDate;
 import java.util.Date;
-
-
-
-//import java.time.LocalTime;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -37,17 +35,14 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-//import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
-//import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-//import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
@@ -74,23 +69,12 @@ public class Main extends Application {
     private Text statusText = new Text();
 
     /** Current User Selections */
-    //private Massage selectedMassage;
-    //private Scrub selectedScrub;
     private Therapist selectedTherapist;
     private Appointment selectedAppointment;
     private Client selectedClient;
-    //private ArrayList<Service> services = new ArrayList<Service>(Arrays.asList(null, null));
-    //private ObservableList<Service> services = FXCollections.observableArrayList(null, null);
+    private String selectedTime;
 
     /** App Collections */
-    private ArrayList<Client> clients = new ArrayList<Client>();
-    //private ArrayList<Therapist> therapists = new ArrayList<Therapist>();
-    private ObservableList<Therapist> therapists = FXCollections.observableArrayList();
-    private ObservableList<Massage> massages = FXCollections.observableArrayList();
-    private ObservableList<Scrub> scrubs = FXCollections.observableArrayList();
-    //private ArrayList<Massage> massages = new ArrayList<Massage>();
-    //private ArrayList<Scrub> scrubs = new ArrayList<Scrub>();
-    //private ArrayList<Appointment> appointments = new ArrayList<Appointment>();
     private ObservableList<Appointment> appointmentList = FXCollections.observableArrayList(); // May replace ArrayList<Appointment> for searching
     private FilteredList<Appointment> filteredList;
 
@@ -99,13 +83,9 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
     
         load(); // Populate Application Data (MongoDB)
-        //testData();
 
         appointmentList = FXCollections.observableArrayList(Store.getAppointments());
         filteredList = new FilteredList<>(appointmentList);
-
-        // Filtered List will be used for searching the TableView
-        //FilteredList<Appointment> filteredAppointments = new FilteredList<>(appointmentList, p -> true);
 
         /** Data Table */
         TableView<Appointment> tableView = new TableView<>();
@@ -132,11 +112,6 @@ public class Main extends Application {
         tableView.getColumns().add(column5);
         tableView.getColumns().add(column6);
 
-        // Load appointments into Table
-        // for (Appointment appointment : appointmentList) {
-        //     tableView.getItems().add(appointment);
-        // }
-        //tableView.getItems().addAll(Store.getAppointments());
         tableView.setItems(filteredList); // Set tableView to the filtered list
 
 
@@ -149,19 +124,7 @@ public class Main extends Application {
         Label lbTherapist = new Label("Therapist:");
         Label lbDate = new Label("Date:");
 
-        // Choice Boxes -- Needs Work
-        // for (Massage massage : massages) {
-        //     //cbMassage.getItems().add(massage.getStyle());
-        //     cbMassage.getItems().add(massage);
-        // }
-        // for (Scrub scrub : scrubs) {
-        //     //cbScrub.getItems().add(scrub.getProductType());
-        //     cbScrub.getItems().add(scrub);
-        // }
-        // for (Therapist therapist : therapists) {
-        //     //cbTherapist.getItems().add(therapist.getName());
-        //     cbTherapist.getItems().add(therapist);
-        // }
+        // Choice Boxes
         cbMassage.getItems().addAll(Store.getMassages());
         cbScrub.getItems().addAll(Store.getScrubs());
         cbTherapist.getItems().addAll(Store.getTherapists());
@@ -191,6 +154,7 @@ public class Main extends Application {
 
         // UI Settings
         cbScrub.setDisable(true);
+        cbTime.setDisable(true);
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(5);
         gridPane.setVgap(10);
@@ -216,9 +180,13 @@ public class Main extends Application {
             if (checkInput()) {
             }
             else {
-                Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                // FUTURE - Add Hours to Date using: date = DateUtils.addHours(date, time) or similar
-    
+                // DATE/TIME: Get Selected Time
+                LocalTime time = LocalTime.parse(selectedTime, DateTimeFormatter.ofPattern("hh:mm a"));
+                // DATE/TIME: Add Time to Selected Date
+                LocalDateTime dateTime = LocalDateTime.of(dpDate.getValue(), time);
+                // DATE/TIME: Convert to java.util.Date
+                Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+  
                 // Create Appointment
                 Client newClient = new Client(tfFirstName.getText(), tfLastName.getText());
                 newClient.setPhoneNumber(tfPhoneNumber.getText());
@@ -250,21 +218,9 @@ public class Main extends Application {
                 Appointment newAppointment = new Appointment(newClient.getUserID(), selectedTherapist.getUserID(), tempServices, date);
 
                 // Add Appointment to DB and Store
-                //Store.addAppointment(newAppointment);
-                appointmentList.add(newAppointment); // ObservableList should automatically update the Store Arraylist
-                //filteredList.add(newAppointment); // add to filter
+                appointmentList.add(newAppointment); // ObservableList should automatically update the Store ArrayList
                 db.insertObject(newAppointment);
-
-                // There is a better method to update ObservableList when its watched list changes... however,
-                // this works for now as more research is needed on ObservableList listeners.
-                //filteredList = new FilteredList<>(FXCollections.observableArrayList(Store.getAppointments()));
-                //tableView.setItems(filteredList);
-                
-                // Add Appointment to Table
-                //tableView.getItems().add(newAppointment);
-                
-
-
+             
                 clearInput();
             }     
         });
@@ -276,19 +232,37 @@ public class Main extends Application {
 
         // Massage Select
         cbMassage.setOnAction(e -> {
-            //selectedMassage = massages.get(cbMassage.getSelectionModel().getSelectedIndex());
-            //services.add(selectedMassage);
-            //services.set(0, selectedMassage);
-            //System.out.println(((Massage)services.get(0)).getStyle());
             cbScrub.setDisable(false);
         });
 
-        // Scrub Select
-        cbScrub.setOnAction(e -> {
-            //selectedScrub = scrubs.get(cbScrub.getSelectionModel().getSelectedIndex());
-            //services.add(selectedScrub);
-            //services.set(1, selectedScrub);
-            //System.out.println(((Scrub)services.get(1)).getProductType());
+        dpDate.setOnAction(e -> {
+            cbTime.getItems().clear();
+            if (dpDate.getValue() != null) {
+                ArrayList<String> bookableTimes = new ArrayList<String>(Arrays.asList("08:00 AM", "10:00 AM","12:00 PM", "02:00 PM", "04:00 PM", "06:00 PM", "08:00 PM"));
+                ArrayList<String> availableTimes = new ArrayList<String>();
+                availableTimes.addAll(bookableTimes);
+
+                for (Appointment appointment : appointmentList) {
+                    for (String time : bookableTimes) {
+
+                        LocalTime localTime = LocalTime.parse(time, DateTimeFormatter.ofPattern("hh:mm a"));
+                        LocalDateTime dateTime = LocalDateTime.of(dpDate.getValue(), localTime);
+                        Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+                        if ((appointment.getDateTime().equals(date))) {
+                            availableTimes.remove(time);
+                        }
+
+                    }
+                }
+
+                cbTime.getItems().addAll(availableTimes);
+                cbTime.setDisable(false);
+            }
+        });
+
+        cbTime.setOnAction(e -> {
+            selectedTime = cbTime.getValue();
         });
 
         // Delete Button
@@ -297,19 +271,11 @@ public class Main extends Application {
             Appointment deleteApt = tableView.getSelectionModel().getSelectedItem();
             db.deleteObject(deleteApt);
 
-            //Store.getAppointments().remove(deleteApt);
             appointmentList.remove(deleteApt); // ObservableList should automatically remove the object from the Store ArrayList
-            //filteredList.remove(deleteApt);
-            //tableView.getItems().remove(deleteApt);
-            //filteredList.remove(deleteApt);
-
-            // There is a better method to update ObservableList when its watched list changes... however,
-            // this works for now as more research is needed on ObservableList listeners.
-            //filteredList = new FilteredList<>(FXCollections.observableArrayList(Store.getAppointments()));
-            //tableView.setItems(filteredList);
-        
+     
             BookingDialog  deleteDialog = new BookingDialog("Delete Appointment", "Booking #" + deleteApt.getAppointmentID() + " on " + deleteApt.getDateTime() + " has been deleted.");
             deleteDialog.showAndWait();
+            clearInput();
             }
             else {
                 BookingDialog deleteDialog = new BookingDialog("Deletion Issue", "You do not have an appointment selected.");
@@ -322,16 +288,11 @@ public class Main extends Application {
             if (tableView.getSelectionModel().getSelectedItem() != null) {
 
                 if (btEditAppointment.getText().equals("Edit")) 
-                { // Get the Selected Appointment
+                { 
+                    // Get the Selected Appointment
                     selectedAppointment = tableView.getSelectionModel().getSelectedItem();
+                    
                     // Set the editable fields
-// NEED TO FIX
-                    // tfFirstName.setText(selectedAppointment.getClient().getFirstName());
-                    // tfLastName.setText(selectedAppointment.getClient().getLastName());
-                    // tfPhoneNumber.setText(selectedAppointment.getClient().getPhoneNumber());
-                    // selectedTherapist = selectedAppointment.getTherapist();
-                    //System.out.println(Store.getClients().get(selectedAppointment.getClient() - 1).getFirstName());
-
                     for (Client client : Store.getClients()) {
                         if (client.getUserID() == selectedAppointment.getClient()) {
                             selectedClient = client;
@@ -339,16 +300,9 @@ public class Main extends Application {
                     }
 
                     try {
-                    // tfFirstName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getFirstName());
-                    // tfLastName.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getLastName());
-                    // tfPhoneNumber.setText(Store.getClients().get(selectedAppointment.getClient() - 1).getPhoneNumber());
                     tfFirstName.setText(selectedClient.getFirstName());
                     tfLastName.setText(selectedClient.getLastName());
                     tfPhoneNumber.setText(selectedClient.getPhoneNumber());
-
-                    //cbTherapist.getSelectionModel().select(Store.getTherapists().get(selectedAppointment.getTherapist() - 1));
-                    //cbTherapist.setValue(Store.getTherapists().get(selectedAppointment.getTherapist() - 1));
-                    //System.out.println(Store.getTherapists().get(selectedAppointment.getTherapist() - 3).getName());
                     } catch (Exception ex) {
                         System.out.println(ex.getMessage());
                         System.out.println("Client in Array: " + (selectedAppointment.getClient() - 1));
@@ -360,18 +314,12 @@ public class Main extends Application {
                         }
                     }
 
-                    //System.out.println(selectedTherapist.getName());
-                    //cbTherapist.setValue(therapists.get(0));
-// NEED TO FIX
-                    // cbTherapist.getSelectionModel().select(selectedTherapist);
-                    // cbMassage.getSelectionModel().select((Massage)(selectedAppointment.getServices().get(0)));
                     for (Massage massage: Store.getMassages()) {
                         if (massage.getServiceId() == selectedAppointment.getServices().get(0)) {
                             cbMassage.getSelectionModel().select(massage);
                         }
                     }
                     try {
-                    //cbScrub.getSelectionModel().select((Scrub)(selectedAppointment.getServices()).get(1));
                     for (Scrub scrub : Store.getScrubs()) {
                         if (scrub.getServiceId() == selectedAppointment.getServices().get(1)) {
                             cbScrub.getSelectionModel().select(scrub);
@@ -381,8 +329,14 @@ public class Main extends Application {
                         System.out.println("No scrub found. Continuing...");
                     }
 
-                    //cbScrub.setSelectionModel(null); // Work in Progress
                     dpDate.setValue(selectedAppointment.getDateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+                    // Need a DateFormatter to Grab the Time
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+                    String timeString = dateFormat.format(selectedAppointment.getDateTime());
+                    System.out.println(timeString);
+                    cbTime.setValue(timeString);
+
 
                     btEditAppointment.setText("Save");
                     btCancelEdit.setVisible(true);
@@ -391,10 +345,6 @@ public class Main extends Application {
                     btDeleteAppointment.setDisable(true);
                 }
                 else if (!checkInput()) {
-// NEED TO FIX
-                    // selectedAppointment.getClient().setFirstName(tfFirstName.getText());
-                    // selectedAppointment.getClient().setLastName(tfLastName.getText());
-                    // selectedAppointment.getClient().setPhoneNumber(tfPhoneNumber.getText());
 
                     for(Client client : Store.getClients()) {
                         if (client.getUserID() == selectedAppointment.getClient()) {
@@ -411,14 +361,11 @@ public class Main extends Application {
                     if (cbScrub.getSelectionModel().getSelectedItem() != null) {
                         tempServices.add(cbScrub.getSelectionModel().getSelectedItem().getServiceId());
                     }
-// NEED TO FIX                 
+               
                     selectedAppointment.setServices(tempServices);
                     selectedAppointment.setTherapist(selectedTherapist.getUserID());
 
-
-
                     Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                    // FUTURE - Add Hours to Date using: date = DateUtils.addHours(date, time) or similar
                     selectedAppointment.setDateTime(date);
 
                     //Bson filter = Filters.eq("appointmentID", selectedAppointment.getAppointmentID());
@@ -441,6 +388,7 @@ public class Main extends Application {
             }
         });
 
+        // Cancel Edit, Resets Fields
         btCancelEdit.setOnAction(e -> {
             clearInput();
             btEditAppointment.setText("Edit");
@@ -515,6 +463,9 @@ public class Main extends Application {
             Store.setTherapists(db.getCollection("therapists", Therapist.class));
             Store.setAppointments(db.getCollection("appointments", Appointment.class));
             statusText.setText(statusText.getText() + "\n\tLoaded collections successfully.");
+            Store.setLastAppointmentID();
+            Appointment.setAppointmentCount(); // Helps with Application Reload and Duplicate appointmentIDs
+            
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             statusText.setText(statusText.getText() + "\n\tConnection to database failed.");
@@ -527,81 +478,98 @@ public class Main extends Application {
         tfFirstName.setText(null);
         tfLastName.setText(null);
         tfPhoneNumber.setText(null);
+
         cbMassage.setValue(null);
         cbScrub.setValue(null);
         cbTherapist.setValue(null);
-        // cbMassage.setSelectionModel(null); // Work in Progress
-        // cbScrub.setSelectionModel(null); // Work in Progress
-        // cbTherapist.setSelectionModel(null); // Work in Progress
+
         dpDate.setValue(null);
+        cbScrub.setDisable(true);
+
+        cbTime.setValue(null);
+        cbTime.setDisable(true);
     }
 
+    /** Check User Input for Missing Information */
     public boolean checkInput() {
         if (tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") ||
                 tfPhoneNumber.getText().trim().equals("") || cbMassage.getSelectionModel().getSelectedItem() == null ||
-                cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null) {
+                cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null || cbTime.getValue() == null) {
             BookingDialog missingDialog = new BookingDialog("Missing Information!", "You have missing information.");
             missingDialog.showAndWait();
             return true;
         }
+        
+        // Check Phone Number Format
+        String pattern = "\\d{3}-\\d{3}-\\d{4}";
+        if (!tfPhoneNumber.getText().matches(pattern)) {
+            BookingDialog missingDialog = new BookingDialog("Incorrect Phone Number Format!", "Please enter the phone number as XXX-XXX-XXXX");
+            missingDialog.showAndWait();
+            return true;
+        }
+
+
         return false;
     }
     
     /** Generate Test Data */
     public void testData() {
-    /** User Creation */
-    Client client1 = new Client("John", "Smith");
-    client1.setPhoneNumber("123-456-7890");
-    clients.add(client1);
 
-    db.insertObject(client1);
+    // USED PRIOR TO MONGO DB BEING IMPLEMENTED
 
-    Client client2 = new Client("Julie", "Sans");
-    client2.setPhoneNumber("123-455-6654");
-    clients.add(client2);
+    // /** User Creation */
+    // Client client1 = new Client("John", "Smith");
+    // client1.setPhoneNumber("123-456-7890");
+    // clients.add(client1);
 
-    db.insertObject(client2);
+    // db.insertObject(client1);
 
-    Therapist therapist1 = new Therapist("Jane", "Doe");
-    therapists.add(therapist1);
+    // Client client2 = new Client("Julie", "Sans");
+    // client2.setPhoneNumber("123-455-6654");
+    // clients.add(client2);
 
-    db.insertObject(therapist1);
+    // db.insertObject(client2);
 
-    /** Service Creation */
-    Massage massage1 = new Massage("Swedish Massage", 90, 80.00);
-    Massage massage2 = new Massage("Deep Tissue Massage", 120, 80.00);
+    // Therapist therapist1 = new Therapist("Jane", "Doe");
+    // therapists.add(therapist1);
 
-    massages.add(massage1);
-    massages.add(massage2);
+    // db.insertObject(therapist1);
 
-    db.insertObject(massage1);
-    db.insertObject(massage2);
+    // /** Service Creation */
+    // Massage massage1 = new Massage("Swedish Massage", 90, 80.00);
+    // Massage massage2 = new Massage("Deep Tissue Massage", 120, 80.00);
 
-    Scrub scrub1 = new Scrub("Sugar Scrub", 30.00);
-    Scrub scrub2 = new Scrub("Salt Scrub", 30.00);
+    // massages.add(massage1);
+    // massages.add(massage2);
 
-    scrubs.add(scrub1);
-    scrubs.add(scrub2);
+    // db.insertObject(massage1);
+    // db.insertObject(massage2);
 
-    db.insertObject(scrub1);
-    db.insertObject(scrub2);
+    // Scrub scrub1 = new Scrub("Sugar Scrub", 30.00);
+    // Scrub scrub2 = new Scrub("Salt Scrub", 30.00);
 
-    /** Appointment Creation */
-    Appointment appointment1 = new Appointment(client1.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage1.getServiceId(), scrub1.getServiceId())), new java.util.Date());
-    Appointment appointment2 = new Appointment(client2.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage2.getServiceId(), scrub2.getServiceId())), new java.util.Date());
+    // scrubs.add(scrub1);
+    // scrubs.add(scrub2);
+
+    // db.insertObject(scrub1);
+    // db.insertObject(scrub2);
+
+    // /** Appointment Creation */
+    // Appointment appointment1 = new Appointment(client1.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage1.getServiceId(), scrub1.getServiceId())), new java.util.Date());
+    // Appointment appointment2 = new Appointment(client2.getUserID(), therapist1.getUserID(), new ArrayList<Integer>(Arrays.asList(massage2.getServiceId(), scrub2.getServiceId())), new java.util.Date());
     
-    //appointmentList.add(appointment1);
-    //appointmentList.add(appointment2);
+    // //appointmentList.add(appointment1);
+    // //appointmentList.add(appointment2);
 
-    db.insertObject(appointment1);
-    db.insertObject(appointment2);
+    // db.insertObject(appointment1);
+    // db.insertObject(appointment2);
 
-    /** Default Test Fields */
-    tfSearch.setText("Search coming soon...");
-    tfSearch.setEditable(false);
-    tfSearch.setDisable(true);
+    // /** Default Test Fields */
+    // tfSearch.setText("Search coming soon...");
+    // tfSearch.setEditable(false);
+    // tfSearch.setDisable(true);
 
-    cbTime.setDisable(true);
+    // cbTime.setDisable(true);
 
     }
 

@@ -31,7 +31,7 @@ public class Appointment {
     /** Constructors */
     protected Appointment() {
         //setAppointmentID();
-        ++appointmentCount;
+        //++appointmentCount;
     }
     Appointment(int client, int therapist, ArrayList<Integer> services, Date dateTime) {
         this.client = client;
@@ -166,5 +166,9 @@ public class Appointment {
     @Override
     public String toString() {
         return "" + this.getDateTime();
+    }
+
+    public static void setAppointmentCount() {
+        appointmentCount = Store.getLastAppointmentID();
     }
 }

@@ -1,8 +1,9 @@
 package massageapp;
 
+/* Purpose is to maintain a "Data Store" for the application */
+
 import java.util.ArrayList;
 
-/* Purpose is to maintain a "Data Store" for the application */
 public class Store {
         // Store of Collections
         private static ArrayList<Appointment> appointments = new ArrayList<Appointment>();
@@ -11,9 +12,9 @@ public class Store {
         private static ArrayList<Scrub> scrubs = new ArrayList<Scrub>();
         private static ArrayList<Massage> massages = new ArrayList<Massage>();
 
-    // Store() {
+        // During application reload, this helps ensure we don't get duplicate appointmentID's
+        private static int lastAppointmentID;
 
-    // }
 
     public static ArrayList<Appointment> getAppointments() {
         return appointments;
@@ -54,6 +55,12 @@ public class Store {
         appointments.add(appointment);
     }
 
+    public static void setLastAppointmentID() {
+        lastAppointmentID = appointments.get(appointments.size() - 1).getAppointmentID();
+    }
+    public static int getLastAppointmentID() {
+        return lastAppointmentID;
+    }
     
 
 }
