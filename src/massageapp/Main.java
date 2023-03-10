@@ -438,10 +438,14 @@ public class Main extends Application {
 
         // Title
         Text textHeader = new Text("Pseudo Massage");
+        Text textSubHeader = new Text("by Aaron Corns");
         textHeader.setFont(Font.font("veranda", FontWeight.BOLD, FontPosture.REGULAR, 48));
-        HBox hbox2 = new HBox(textHeader);
+        textSubHeader.setFont(Font.font("veranda", FontWeight.NORMAL, FontPosture.ITALIC, 16));
+        VBox vbox2 = new VBox(textHeader, textSubHeader);
+        HBox hbox2 = new HBox(vbox2);
+        vbox2.setAlignment(Pos.CENTER);
         hbox2.setAlignment(Pos.CENTER);
-        hbox2.setPadding(new Insets(0, 10, 10, 0));
+        hbox2.setPadding(new Insets(0, 10, 20, 0));
 
         VBox vbox = new VBox(hbox2, gridPane, hbox, tableView, sp);
         Scene scene = new Scene(vbox, 700, 500);
