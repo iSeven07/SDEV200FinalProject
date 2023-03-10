@@ -376,7 +376,13 @@ public class Main extends Application {
                     selectedAppointment.setServices(tempServices);
                     selectedAppointment.setTherapist(selectedTherapist.getUserID());
 
-                    Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    // DATE/TIME: Get Selected Time
+                    LocalTime time = LocalTime.parse(selectedTime, DateTimeFormatter.ofPattern("hh:mm a"));
+                    // DATE/TIME: Add Time to Selected Date
+                    LocalDateTime dateTime = LocalDateTime.of(dpDate.getValue(), time);
+                    // DATE/TIME: Convert to java.util.Date
+                    Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    //Date date = Date.from(dpDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
                     selectedAppointment.setDateTime(date);
 
                     //Bson filter = Filters.eq("appointmentID", selectedAppointment.getAppointmentID());
@@ -389,6 +395,7 @@ public class Main extends Application {
                     tableView.setDisable(false);
                     btBookAppointment.setDisable(false);
                     btDeleteAppointment.setDisable(false);
+                    btCancelEdit.setVisible(false);
                     tableView.refresh();
                     clearInput();
                 }
@@ -509,9 +516,10 @@ public class Main extends Application {
 
     /** Check User Input for Missing Information */
     public boolean checkInput() {
-        if (tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") ||
-                tfPhoneNumber.getText().trim().equals("") || cbMassage.getSelectionModel().getSelectedItem() == null ||
-                cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null || cbTime.getValue() == null) {
+        if (tfFirstName.getText().equals(null) || tfLastName.getText().equals(null) ||
+                tfPhoneNumber.getText().equals(null) || cbMassage.getSelectionModel().getSelectedItem() == null ||
+                cbTherapist.getSelectionModel().getSelectedItem() == null || dpDate.getValue() == null || cbTime.getValue() == null ||
+                tfFirstName.getText().trim().equals("") || tfLastName.getText().trim().equals("") || tfPhoneNumber.getText().trim().equals("")) {
             BookingDialog missingDialog = new BookingDialog("Missing Information!", "You have missing information.");
             missingDialog.showAndWait();
             return true;
