@@ -65,7 +65,7 @@ public class Appointment {
         this.services = services;
     }
     @BsonIgnore
-    public double getCost() {
+    public String getCost() {
         double totalCost = 0.00;
 
         // for (Service service : services) {
@@ -75,20 +75,19 @@ public class Appointment {
         for (Massage massage : Store.getMassages()) {
             if(massage.getServiceId() == this.services.get(0)) {
                 totalCost += massage.getPrice();
-                System.out.println("getCost() Massage Found!");
-            }
-            else {
-                System.out.println(massage.getStyle() + ": " + massage.getServiceId() + " != " + this.services.get(0));
+                //System.out.println("getCost() Massage Found!");
             }
         }
-        for (Scrub scrub : Store.getScrubs()) {
-            if(scrub.getServiceId() == this.services.get(1)) {
-                totalCost += scrub.getPrice();
-                System.out.println("getCost() Scrub Found!");
+        if (this.getServices().size() > 1) {
+            for (Scrub scrub : Store.getScrubs()) {
+                if(scrub.getServiceId() == this.services.get(1)) {
+                    totalCost += scrub.getPrice();
+                    //System.out.println("getCost() Scrub Found!");
+                }
             }
         }
 
-        return totalCost;
+        return String.format("$%.2f", totalCost);
     }
 
     public Date getDateTime() {

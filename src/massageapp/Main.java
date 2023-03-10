@@ -96,14 +96,16 @@ public class Main extends Application {
         TableColumn<Appointment, String> column3 = new TableColumn<>("Phone Number");
         TableColumn<Appointment, String> column4 = new TableColumn<>("Therapist Name");
         TableColumn<Appointment, String> column5 = new TableColumn<>("Services");
-        TableColumn<Appointment, String> column6 = new TableColumn<>("Date / Time");
+        TableColumn<Appointment, String> column6 = new TableColumn<>("Total Cost");
+        TableColumn<Appointment, String> column7 = new TableColumn<>("Date / Time");
 
         column1.setCellValueFactory(new PropertyValueFactory<>("appointmentID"));
         column2.setCellValueFactory(new PropertyValueFactory<>("clientName"));
         column3.setCellValueFactory(new PropertyValueFactory<>("clientPhoneNumber"));
         column4.setCellValueFactory(new PropertyValueFactory<>("therapistName"));
         column5.setCellValueFactory(new PropertyValueFactory<>("servicesString"));
-        column6.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
+        column6.setCellValueFactory(new PropertyValueFactory<>("cost"));
+        column7.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
 
         tableView.getColumns().add(column1);
         tableView.getColumns().add(column2);
@@ -111,6 +113,7 @@ public class Main extends Application {
         tableView.getColumns().add(column4);
         tableView.getColumns().add(column5);
         tableView.getColumns().add(column6);
+        tableView.getColumns().add(column7);
 
         tableView.setItems(filteredList); // Set tableView to the filtered list
 
