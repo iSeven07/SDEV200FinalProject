@@ -5,9 +5,17 @@ package massageapp;
  * Author: Aaron Corns
  * Date: 2-22-2023
  * Course: SDEV-200
- * Last Update: 3-9-2023
+ * Last Update: 3-10-2023
  * 
- * Notes: The application is still a work in progress. 
+ * Purpose: This application allows a user to create appointments for a pseudo massage business. The application starts by allowing
+ *          input to create an application. An appointment cannot be created unless all required fields are filled out as well as ensuring
+ *          that the phone number is in the proper format. Scrubs are optional, but a massage type is always required. The program will
+ *          determine if a client is new based on the phone number. If the phone number is new, a new client will be created. The application
+ *          allows the user to also edit and delete appointments that are selected from the Appointment Table. Client data can be edited
+ *          when editing the appointment. The new client information will be sent to the database. MongoDB Atlas is being used as the database.
+ * 
+ *          When running this application JavaFX and MongoDB referenced libraries are required. The required MongoDB driver files are already
+ *          included and are located in the 'lib' folder. Please see the .docx file for documentation on using the program.
  * 
  */
 
