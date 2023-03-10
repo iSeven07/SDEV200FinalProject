@@ -405,8 +405,10 @@ public class Main extends Application {
                 if (newValue == null || newValue.isEmpty()) {
                     return true; // show full list
                 }
+                
                 String lowerCaseFilter = newValue.toLowerCase();
-                return appointment.getClientName().toLowerCase().contains(lowerCaseFilter);
+                return appointment.getClientName().toLowerCase().contains(lowerCaseFilter) || appointment.getTherapistName().toLowerCase().contains(lowerCaseFilter) ||
+                       String.valueOf(appointment.getAppointmentID()).contains(lowerCaseFilter);
             });
         });
 
